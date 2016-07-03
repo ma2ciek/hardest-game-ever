@@ -1,13 +1,13 @@
 class Opponent {
 	constructor(obj) {
-		this.radius = obj.radius;
-		this.pos = new Vector(obj.start.x, obj.start.y);
+		this.radius = obj.radius || 8;
+		this.pos = Vector.fromPoint(obj.start);
 
 		this.dir = 1;
 
-		this.start = new Vector(obj.start.x, obj.start.y);
-		this.end = new Vector(obj.end.x, obj.end.y);
-		this.speed = obj.speed;
+		this.start = Vector.fromPoint(obj.start);
+		this.end = Vector.fromPoint(obj.end);
+		this.speed = obj.speed || 2;
 
 		this.v = Vector.fromDiff(this.start, this.end).toSize(this.speed);
 		
@@ -33,34 +33,3 @@ class Opponent {
 		ctx.closePath();
 	}
 }
-
-class Vector {
-	constructor(x, y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	toSize(value) {
-		var currentSize = this.getSize();
-		this.x *= value / currentSize;
-		this.y *= value / currentSize;
-		return this;
-	}
-
-	getSize() {
-		return Math.sqrt(this.x * this.x + this.y * this.y);
-	}
-
-	add(vector) {
-		return new Vector(this.x + vector.x, this.y + vector.y);
-	}
-
-	multiplyBy(value) {
-		return new Vector(this.x * value, this.y * value);
-	}
-}
-
-Vector.fromDiff = function(v1, v2) {
-	return new Vector(v2.x - v1.x, v2.y - v1.y);
-}
-

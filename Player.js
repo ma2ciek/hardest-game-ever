@@ -1,12 +1,12 @@
-
 class Player {
-	constructor() {
-		this.x = 0;
-		this.y = 0;
+	constructor(obj) {
+		this.startPosition = { x: obj.x, y: obj.y };
+		this.x = obj.x;
+		this.y = obj.y;
 		this.vx = 0;
 		this.vy = 0;
 		this.width = 10;
-		this.height  = 10;
+		this.height = 10;
 		this.color = '#000';
 		this.speed = 2;
 		this.addEventListeners();
@@ -14,11 +14,11 @@ class Player {
 
 	addEventListeners() {
 		window.addEventListener('keydown', (e) => {
-			switch(e.keyCode) {
+			switch (e.keyCode) {
 				case 40:
 					this.vy = this.speed;
 					break;
-				case 39: 
+				case 39:
 					this.vx = this.speed;
 					break;
 				case 38:
@@ -31,7 +31,7 @@ class Player {
 		});
 
 		window.addEventListener('keyup', (e) => {
-			switch(e.keyCode) {
+			switch (e.keyCode) {
 				case 40:
 				case 38:
 					this.vy = 0;
@@ -55,7 +55,7 @@ class Player {
 	}
 
 	moveToStart() {
-		this.x = 0;
-		this.y = 0;
+		this.x = this.startPosition.x;
+		this.y = this.startPosition.y;
 	}
 }

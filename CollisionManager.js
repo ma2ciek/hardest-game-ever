@@ -6,9 +6,10 @@ class CollisionManager {
 	}
 
 	collisionExist() {
-		for(var opponent of this.opponents) {
-			if(this.checkSingleCollision(opponent))
+		for (var opponent of this.opponents) {
+			if (this.checkSingleCollision(opponent)) {
 				return true;
+			}
 		}
 		return false;
 	}
