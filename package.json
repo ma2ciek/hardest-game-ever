@@ -1,0 +1,19 @@
+{
+  "name": "hardest-game-ever",
+  "version": "0.0.1",
+  "description": "JavaScript port of the known flash game",
+  "author": "Maciej Bukowski <ma2ciek@gmail.com>",
+  "scripts": {
+    "start": "node devServer.js",
+    "postinstall": "typings install"
+  },
+  "devDependencies": {
+    "express": "^4.14.0",
+    "rimraf": "^2.5.3",
+    "ts-loader": "^0.8.2",
+    "typescript": "^1.8.10",
+    "webpack": "^1.13.1",
+    "webpack-dev-middleware": "^1.6.1",
+    "webpack-hot-middleware": "^2.12.0"
+  }
+}
