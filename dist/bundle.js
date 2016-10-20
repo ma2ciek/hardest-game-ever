@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "3a6327189c83be03da98"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "6c5fe67670a4ab5d44f0"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -570,7 +570,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "static";
+/******/ 	__webpack_require__.p = "dist";
 
 /******/ 	// __webpack_hash__
 /******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
@@ -653,9 +653,69 @@
 
 /***/ },
 /* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	eval("\"use strict\";\nconst Game_1 = __webpack_require__(13);\nconst game = new Game_1.default('canvas');\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/main.ts\n ** module id = 12\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/main.ts?");
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	eval("\"use strict\";\nconst Level_1 = __webpack_require__(14);\nclass Game {\n    constructor(selector) {\n        this.canvas = document.querySelector(selector);\n        this.ctx = this.canvas.getContext('2d');\n        this.levelId = 0;\n        this.loadCurrentLevel();\n        this.renderCurrentLevel();\n    }\n    loadCurrentLevel() {\n        this.loadMapData(this.levelId).then(map => this.createLevel(map), err => console.log(err));\n    }\n    createLevel(map) {\n        this.level = new Level_1.default(map, this.canvas);\n        this.level.success.once(() => this.next());\n    }\n    loadMapData(levelId) {\n        return new Promise((res, rej) => {\n            const xhr = new XMLHttpRequest();\n            xhr.open('GET', 'dist/levels/level_' + levelId + '.json');\n            xhr.onload = () => res(xhr.response);\n            xhr.onerror = (err) => rej(err);\n            xhr.send();\n        }).then(data => JSON.parse(data));\n    }\n    renderCurrentLevel() {\n        if (this.level)\n            this.level.animate(this.ctx);\n        window.requestAnimationFrame(this.renderCurrentLevel.bind(this));\n    }\n    next() {\n        this.levelId++;\n        this.loadCurrentLevel();\n    }\n}\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = Game;\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/Game.ts\n ** module id = 13\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/Game.ts?");
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	eval("\"use strict\";\nconst Player_1 = __webpack_require__(15);\nconst CollisionManager_1 = __webpack_require__(18);\nconst OpponentFactory_1 = __webpack_require__(19);\nconst Meta_1 = __webpack_require__(21);\nconst Emitter_1 = __webpack_require__(22);\nclass Level {\n    constructor(map, canvas) {\n        this.success = new Emitter_1.default();\n        canvas.width = map.width;\n        canvas.height = map.height;\n        this.player = new Player_1.default(map.player);\n        const opponents = new OpponentFactory_1.default().createOpponents(map.opponents);\n        const meta = new Meta_1.default(map.end);\n        this.collisionWithOpponents = new CollisionManager_1.default(this.player, opponents);\n        this.metaCollision = new CollisionManager_1.default(this.player, [meta]);\n        this.entities = [].concat(opponents, [this.player], [meta]);\n    }\n    animate(ctx) {\n        this.entities.forEach(e => e.move());\n        if (this.collisionWithOpponents.collisionExist()) {\n            this.player.moveToStart();\n        }\n        if (this.metaCollision.collisionExist()) {\n            this.success.emit();\n        }\n        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);\n        this.entities.forEach(e => e.render(ctx));\n    }\n    destroy() {\n        // TODO: destory player listeners\n    }\n}\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = Level;\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/Level.ts\n ** module id = 14\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/Level.ts?");
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	eval("\"use strict\";\nconst Vector_1 = __webpack_require__(16);\nconst config_1 = __webpack_require__(17);\nclass Player {\n    constructor(obj) {\n        this.startPosition = { x: obj.x, y: obj.y };\n        this.x = obj.x;\n        this.y = obj.y;\n        this.dirX = 0;\n        this.dirY = 0;\n        this.width = 10;\n        this.height = 10;\n        this.color = config_1.PLAYER_COLOR;\n        this.speed = config_1.PLAYER_SPEED;\n        this.addEventListeners();\n    }\n    addEventListeners() {\n        window.addEventListener('keydown', (e) => {\n            switch (e.keyCode) {\n                case 40:\n                    this.dirY = 1;\n                    break;\n                case 39:\n                    this.dirX = 1;\n                    break;\n                case 38:\n                    this.dirY = -1;\n                    break;\n                case 37:\n                    this.dirX = -1;\n                    break;\n            }\n        });\n        window.addEventListener('keyup', (e) => {\n            switch (e.keyCode) {\n                case 40:\n                case 38:\n                    this.dirY = 0;\n                    break;\n                case 39:\n                case 37:\n                    this.dirX = 0;\n                    break;\n            }\n        });\n    }\n    move() {\n        let v = new Vector_1.default(this.dirX, this.dirY).toSize(this.speed);\n        this.x += v.x;\n        this.y += v.y;\n    }\n    render(ctx) {\n        ctx.fillStyle = this.color;\n        ctx.fillRect(this.x, this.y, this.width, this.height);\n    }\n    moveToStart() {\n        this.x = this.startPosition.x;\n        this.y = this.startPosition.y;\n    }\n    getBoundingRect() {\n        return { left: this.x, top: this.y, width: this.width, height: this.height };\n    }\n}\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = Player;\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/Player.ts\n ** module id = 15\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/Player.ts?");
+
+/***/ },
+/* 16 */
 /***/ function(module, exports) {
 
-	eval("import Game from './Game';\nconst game = new Game('canvas');\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/main.ts\n ** module id = 12\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/main.ts?");
+	eval("\"use strict\";\nclass Vector {\n    constructor(x, y) {\n        this.x = x;\n        this.y = y;\n    }\n    static fromDiff(v1, v2) {\n        return new Vector(v2.x - v1.x, v2.y - v1.y);\n    }\n    static fromPoint(p) {\n        return new Vector(p.x, p.y);\n    }\n    toSize(value) {\n        const currentSize = this.getSize();\n        if (currentSize === 0) {\n            this.x = 0;\n            this.y = 0;\n        }\n        else {\n            this.x *= value / currentSize;\n            this.y *= value / currentSize;\n        }\n        return this;\n    }\n    getSize() {\n        return Math.sqrt(this.x * this.x + this.y * this.y);\n    }\n    add(vector) {\n        return new Vector(this.x + vector.x, this.y + vector.y);\n    }\n    multiplyBy(value) {\n        return new Vector(this.x * value, this.y * value);\n    }\n}\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = Vector;\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/Vector.ts\n ** module id = 16\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/Vector.ts?");
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	eval("\"use strict\";\nexports.PLAYER_COLOR = '#000';\nexports.PLAYER_SPEED = 2;\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/config.ts\n ** module id = 17\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/config.ts?");
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	eval("\"use strict\";\nclass CollisionManager {\n    constructor(obj, objects) {\n        this.obj = obj;\n        this.objects = objects;\n    }\n    collisionExist() {\n        const b1 = this.obj.getBoundingRect();\n        for (const object of this.objects) {\n            if (this.checkSingleCollision(object.getBoundingRect(), b1)) {\n                return true;\n            }\n        }\n        return false;\n    }\n    checkSingleCollision(b1, b2) {\n        return b1.left < b2.left + b2.width &&\n            b1.left + b1.width > b2.left &&\n            b1.top < b2.top + b2.height &&\n            b1.top + b1.height > b2.top;\n    }\n}\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = CollisionManager;\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/CollisionManager.ts\n ** module id = 18\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/CollisionManager.ts?");
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	eval("\"use strict\";\nconst OrbitalOpponent_1 = __webpack_require__(20);\nclass OpponentFactory {\n    createOpponents(opponents) {\n        const result = [];\n        for (const type in opponents) {\n            for (const opponentOptions of opponents[type]) {\n                result.push(this.createOpponent(type, opponentOptions));\n            }\n        }\n        return result;\n    }\n    createOpponent(type, opponentOptions) {\n        switch (type) {\n            // case 'normal':\n            //     return new LinearOpponent(<LinearOpponentOptions>opponentOptions);\n            case 'orbital':\n                return new OrbitalOpponent_1.default(opponentOptions);\n            default:\n                throw new Error('missing constructor for type: ' + type);\n        }\n    }\n}\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = OpponentFactory;\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/OpponentFactory.ts\n ** module id = 19\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/OpponentFactory.ts?");
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	eval("\"use strict\";\nconst Vector_1 = __webpack_require__(16);\nclass OrbitalOpponent {\n    constructor(arr) {\n        this.radius = 8;\n        this.R = arr[0];\n        this.speed = arr[1];\n        this.center = Vector_1.default.fromPoint(arr[2]);\n        this.alpha = arr[3];\n        this.move();\n    }\n    move() {\n        this.pos = new Vector_1.default(Math.sin(this.alpha) * this.R + this.center.x, Math.cos(this.alpha) * this.R + this.center.y);\n        this.alpha += this.speed / (60 * Math.PI);\n    }\n    render(ctx) {\n        ctx.beginPath();\n        ctx.fillStyle = '#09f';\n        ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 2 * Math.PI, false);\n        ctx.fill();\n        ctx.closePath();\n    }\n    getBoundingRect() {\n        return {\n            left: this.pos.x - this.radius,\n            top: this.pos.y - this.radius,\n            width: this.radius * 2,\n            height: this.radius * 2\n        };\n    }\n}\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = OrbitalOpponent;\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/OrbitalOpponent.ts\n ** module id = 20\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/OrbitalOpponent.ts?");
+
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
+
+	eval("\"use strict\";\nclass Meta {\n    constructor(p) {\n        this.width = 10;\n        this.height = 10;\n        this.color = '#0A0';\n        this.x = p.x;\n        this.y = p.y;\n    }\n    render(ctx) {\n        ctx.fillStyle = this.color;\n        ctx.fillRect(this.x, this.y, this.width, this.height);\n    }\n    getBoundingRect() {\n        return { left: this.x, top: this.y, width: this.width, height: this.height };\n    }\n    move() {\n        //\n    }\n}\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = Meta;\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/Meta.ts\n ** module id = 21\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/Meta.ts?");
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	eval("\"use strict\";\nclass Emitter {\n    constructor() {\n        this.__callbacks = [];\n    }\n    subscribe(fn) {\n        this.__callbacks.push(fn);\n    }\n    emit(...data) {\n        this.__callbacks.forEach(e => e(...data));\n    }\n    unsubscribe(fn) {\n        this.__callbacks = this.__callbacks.filter(_fn => _fn != fn);\n    }\n    unsubscribeAll() {\n        this.__callbacks = [];\n    }\n    once(fn) {\n        const wrapper = () => {\n            this.unsubscribe(wrapper);\n            fn();\n        };\n        this.__callbacks.push(wrapper);\n    }\n}\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = Emitter;\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./src/Emitter.ts\n ** module id = 22\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/Emitter.ts?");
 
 /***/ }
 /******/ ]);

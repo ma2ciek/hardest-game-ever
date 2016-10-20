@@ -1,4 +1,4 @@
-import Level, {Map} from './Level';
+import Level, { Map } from './Level';
 
 export default class Game {
 
@@ -9,27 +9,32 @@ export default class Game {
 
 	constructor(selector: string) {
 		this.canvas = <HTMLCanvasElement>document.querySelector(selector);
-		this.ctx = this.canvas.getContext('2d');
+
+		let ctx = this.canvas.getContext('2d');
+		if (!ctx)
+			throw new Error('Cannot create 2d context');
+
+		this.ctx = ctx;
 		this.levelId = 0;
 		this.loadCurrentLevel();
 		this.renderCurrentLevel();
 	}
 
-	private loadCurrentLevel() {
-		this.loadMapData(this.levelId).then(
-			map => this.level = new Level(map, this.canvas),
-			err => console.log(err)
+	private async loadCurrentLevel() {
+		await this.loadMapData(this.levelId).then(
+			map => this.createLevel(map),
+			err => console.error(err)
 		);
 	}
 
-	private loadMapData(levelId: number) {
-		return new Promise<Map>((res, rej) => {
-			const xhr = new XMLHttpRequest();
-			xhr.open('GET', 'levels/level_' + levelId + '.json');
-			xhr.onload = () => res(JSON.parse(xhr.response));
-			xhr.onerror = (err) => rej(err);
-			xhr.send();
-		});
+	private createLevel(map: Map) {
+		this.level = new Level(map, this.canvas);
+		this.level.success.once(() => this.next());
+	}
+
+	private loadMapData(levelId: number): Promise<Map> {
+		return fetch('levels/level_' + levelId + '.json')
+			.then((res: Response) => res.json() as any)
 	}
 
 	private renderCurrentLevel() {

@@ -1,4 +1,5 @@
 import Vector, {Point} from './Vector';
+import {PLAYER_COLOR, PLAYER_SPEED} from './config';
 
 export interface PlayerOptions {
 	x: number;
@@ -24,8 +25,8 @@ export default class Player {
 		this.dirY = 0;
 		this.width = 10;
 		this.height = 10;
-		this.color = '#000';
-		this.speed = 2;
+		this.color = PLAYER_COLOR;
+		this.speed = PLAYER_SPEED;
 		this.addEventListeners();
 	}
 

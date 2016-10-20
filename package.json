@@ -8,11 +8,13 @@
     "postinstall": "typings install"
   },
   "devDependencies": {
+    "@types/whatwg-fetch": "0.0.32",
     "express": "^4.14.0",
     "rimraf": "^2.5.3",
-    "ts-loader": "^0.8.2",
-    "typescript": "^1.8.10",
-    "webpack": "^1.13.1",
+    "ts-loader": "^0.9.5",
+    "tslint": "^4.0.0-dev.0",
+    "typescript": "^2.1.0-dev.20161020",
+    "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.6.1",
     "webpack-hot-middleware": "^2.12.0"
   }

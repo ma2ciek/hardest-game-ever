@@ -1,13 +1,14 @@
 import Vector, {Point} from './Vector';
 
-export interface OpponentOptions {
+export interface LinearOpponentOptions {
 	start: Point;
 	end: Point;
 	radius?: number;
 	speed?: number;
+	type: 'normal';
 }
 
-export default class Opponent {
+export default class LinearOpponent {
 	private radius: number;
 	private dir: number;
 	private pos: Vector;
@@ -18,7 +19,7 @@ export default class Opponent {
 	private period: number;
 	private actualPeriodState: number;
 
-	constructor(obj: OpponentOptions) {
+	constructor(obj: LinearOpponentOptions) {
 		this.radius = obj.radius || 8;
 		this.pos = Vector.fromPoint(obj.start);
 
